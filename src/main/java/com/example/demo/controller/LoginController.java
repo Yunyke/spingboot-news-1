@@ -21,7 +21,7 @@ public class LoginController {
     @Autowired
     private CertService certService;
 
-    @GetMapping("/login")
+    @GetMapping
     public String loginPage() {
         return "login";
     }
