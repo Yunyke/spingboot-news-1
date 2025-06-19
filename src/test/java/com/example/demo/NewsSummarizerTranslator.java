@@ -30,9 +30,9 @@ public class NewsSummarizerTranslator {
      * @param article 原文內容（任意語言）
      * @return 中文重點摘要
      */
-    public static String summarize(String article) {              // ★ converted
+    public static String summarize(String article, String system_prompt) {              // ★ converted
     	ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
-    			.addSystemMessage("你是一個專業而且中立的新聞專欄作家，你的任務是不帶任何立場的用繁體中文總結新聞裡面的重點")
+    			.addSystemMessage(system_prompt)
     	        .addUserMessage(article)
     	        .model("deepseek/deepseek-r1:free")
     	        .build();
@@ -43,7 +43,7 @@ public class NewsSummarizerTranslator {
             return response.get(); // result is "Hello"
         }else {
         	return "LLM does not response anything";
-        } 
+        }
     }
 
     /* ---------- Google Translate（非同步） ---------- */
@@ -85,8 +85,9 @@ public class NewsSummarizerTranslator {
 
         // 測試摘要
 //        String summary = summarize(article);
+        String system_prompt = "你是一個專業而且中立的新聞專欄作家，你的任務是不帶任何立場的用繁體中文總結新聞裡面的重點";
         System.out.println("test paul");
-        System.out.println("Summary:\n" + summarize(article));
+        System.out.println("Summary:\n" + summarize(article, system_prompt));
 
         // 測試翻譯
 //        String simplified = "中国大陆今天天气很好。";
