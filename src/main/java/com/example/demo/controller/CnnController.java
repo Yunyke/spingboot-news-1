@@ -25,15 +25,13 @@ public class CnnController {
     private final NewsRepository newsRepository;
     
     public CnnController(NewsRepository newsRepository) {
-		
-		this.newsRepository = newsRepository;
+    	this.newsRepository = newsRepository;
+        this.cnnCrawlerService = cnnCrawlerService;
 	}
 
-    @GetMapping("/cnn")
-    public String getCnnNews(Model model) {
-    	cnnCrawlerService.fetchAndSaveIfNotExist(); 
-    	List<News> cnnNewsList = newsRepository.findBySource("CNN");
-    	model.addAttribute("newsList", cnnNewsList);
-        return "cnn";
+    @GetMapping("/api/news/cnn")
+    public List<News> getCnnNewsAsJson() {
+        cnnCrawlerService.fetchAndSaveIfNotExist(); 
+        return newsRepository.findBySource("CNN");
     }
 }

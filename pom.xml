@@ -31,6 +31,27 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
+		<!-- OpenAI Java SDK（可自訂 baseUrl 指向 OpenRouter） -->
+<dependency>
+  <groupId>com.openai</groupId>
+  <artifactId>openai-java</artifactId>
+  <version>2.8.1</version>
+</dependency>
+
+<!-- 讀取 .env 檔 -->
+<dependency>
+  <groupId>io.github.cdimascio</groupId>
+  <artifactId>dotenv-java</artifactId>
+  <version>3.0.0</version>
+</dependency>
+
+<!-- Google Cloud Translation v2 -->
+<dependency>
+  <groupId>com.google.cloud</groupId>
+  <artifactId>google-cloud-translate</artifactId>
+  <version>2.32.0</version>
+</dependency>
+
 		<dependency>
    			 <groupId>org.springframework.boot</groupId>
    			 <artifactId>spring-boot-starter-thymeleaf</artifactId>

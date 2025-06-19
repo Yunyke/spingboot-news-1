@@ -669,3 +669,52 @@ Identify and stop the process that's listening on port 8009 or configure this ap
 2025-06-19T01:21:58.472+08:00  INFO 12764 --- [spingboot-news-1] [http-nio-8008-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
 2025-06-19T01:21:58.472+08:00  INFO 12764 --- [spingboot-news-1] [http-nio-8008-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
 2025-06-19T01:21:58.474+08:00  INFO 12764 --- [spingboot-news-1] [http-nio-8008-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2025-06-19T18:37:48.823+08:00  INFO 12764 --- [spingboot-news-1] [RMI TCP Connection(1046)-127.0.0.1] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
+2025-06-19T18:37:48.876+08:00  INFO 12764 --- [spingboot-news-1] [RMI TCP Connection(1046)-127.0.0.1] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2025-06-19T18:37:48.894+08:00  INFO 12764 --- [spingboot-news-1] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2025-06-19T18:37:48.913+08:00  INFO 12764 --- [spingboot-news-1] [RMI TCP Connection(1046)-127.0.0.1] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2025-06-19T18:37:48.930+08:00  INFO 12764 --- [spingboot-news-1] [RMI TCP Connection(1046)-127.0.0.1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2025-06-19T18:37:48.936+08:00  INFO 12764 --- [spingboot-news-1] [RMI TCP Connection(1046)-127.0.0.1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
+2025-06-19T18:37:56.583+08:00  INFO 25012 --- [spingboot-news-1] [main] c.e.demo.SpingbootNews1Application       : Starting SpingbootNews1Application using Java 21.0.7 with PID 25012 (C:\Users\User\Desktop\Yuny\spingboot-news-1\target\classes started by User in C:\Users\User\Desktop\Yuny\spingboot-news-1)
+2025-06-19T18:37:56.585+08:00  INFO 25012 --- [spingboot-news-1] [main] c.e.demo.SpingbootNews1Application       : No active profile set, falling back to 1 default profile: "default"
+2025-06-19T18:37:57.591+08:00  INFO 25012 --- [spingboot-news-1] [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-06-19T18:37:57.593+08:00  INFO 25012 --- [spingboot-news-1] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JDBC repositories in DEFAULT mode.
+2025-06-19T18:37:57.634+08:00  INFO 25012 --- [spingboot-news-1] [main] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.NewsRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2025-06-19T18:37:57.635+08:00  INFO 25012 --- [spingboot-news-1] [main] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.RoleRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2025-06-19T18:37:57.635+08:00  INFO 25012 --- [spingboot-news-1] [main] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.UserRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2025-06-19T18:37:57.637+08:00  INFO 25012 --- [spingboot-news-1] [main] .RepositoryConfigurationExtensionSupport : Spring Data JDBC - Could not safely identify store assignment for repository candidate interface com.example.demo.repository.RoomRepository; If you want this repository to be a JDBC repository, consider annotating your entities with one of these annotations: org.springframework.data.relational.core.mapping.Table.
+2025-06-19T18:37:57.637+08:00  INFO 25012 --- [spingboot-news-1] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 38 ms. Found 0 JDBC repository interfaces.
+2025-06-19T18:37:57.648+08:00  INFO 25012 --- [spingboot-news-1] [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+2025-06-19T18:37:57.650+08:00  INFO 25012 --- [spingboot-news-1] [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2025-06-19T18:37:57.698+08:00  INFO 25012 --- [spingboot-news-1] [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 42 ms. Found 4 JPA repository interfaces.
+2025-06-19T18:37:58.219+08:00  INFO 25012 --- [spingboot-news-1] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8008 (http)
+2025-06-19T18:37:58.234+08:00  INFO 25012 --- [spingboot-news-1] [main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2025-06-19T18:37:58.234+08:00  INFO 25012 --- [spingboot-news-1] [main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.41]
+2025-06-19T18:37:58.424+08:00  INFO 25012 --- [spingboot-news-1] [main] org.apache.jasper.servlet.TldScanner     : At least one JAR was scanned for TLDs yet contained no TLDs. Enable debug logging for this logger for a complete list of JARs that were scanned but no TLDs were found in them. Skipping unneeded JARs during scanning can improve startup time and JSP compilation time.
+2025-06-19T18:37:58.432+08:00  INFO 25012 --- [spingboot-news-1] [main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2025-06-19T18:37:58.433+08:00  INFO 25012 --- [spingboot-news-1] [main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 1808 ms
+2025-06-19T18:37:58.610+08:00  INFO 25012 --- [spingboot-news-1] [main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2025-06-19T18:37:58.677+08:00  INFO 25012 --- [spingboot-news-1] [main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.15.Final
+2025-06-19T18:37:58.717+08:00  INFO 25012 --- [spingboot-news-1] [main] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2025-06-19T18:37:59.039+08:00  INFO 25012 --- [spingboot-news-1] [main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2025-06-19T18:37:59.085+08:00  INFO 25012 --- [spingboot-news-1] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2025-06-19T18:37:59.245+08:00  INFO 25012 --- [spingboot-news-1] [main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@6f4adaab
+2025-06-19T18:37:59.247+08:00  INFO 25012 --- [spingboot-news-1] [main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2025-06-19T18:37:59.330+08:00  INFO 25012 --- [spingboot-news-1] [main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'HikariDataSource (HikariPool-1)']
+	Database driver: undefined/unknown
+	Database version: 8.0.34
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2025-06-19T18:38:00.349+08:00  INFO 25012 --- [spingboot-news-1] [main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2025-06-19T18:38:00.422+08:00  INFO 25012 --- [spingboot-news-1] [main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2025-06-19T18:38:00.658+08:00  INFO 25012 --- [spingboot-news-1] [main] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2025-06-19T18:38:01.293+08:00  INFO 25012 --- [spingboot-news-1] [main] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name customUserDetailsService
+2025-06-19T18:38:01.423+08:00  INFO 25012 --- [spingboot-news-1] [main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page: class path resource [static/index.html]
+2025-06-19T18:38:01.857+08:00  INFO 25012 --- [spingboot-news-1] [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8008 (http) with context path '/'
+2025-06-19T18:38:01.863+08:00  INFO 25012 --- [spingboot-news-1] [main] c.e.demo.SpingbootNews1Application       : Started SpingbootNews1Application in 5.712 seconds (process running for 9.495)
+2025-06-19T18:38:04.155+08:00  INFO 25012 --- [spingboot-news-1] [http-nio-8008-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2025-06-19T18:38:04.156+08:00  INFO 25012 --- [spingboot-news-1] [http-nio-8008-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2025-06-19T18:38:04.157+08:00  INFO 25012 --- [spingboot-news-1] [http-nio-8008-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
