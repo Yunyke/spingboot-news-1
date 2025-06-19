@@ -468,7 +468,7 @@ body {
 		      } else {
 		        cart = cart.filter(itemId => itemId !== id);
 		        card.classList.remove("added-to-cart");
-		        btn.innerText = "➕";
+		        btn.innerText = "+";
 		      }
 
 		      localStorage.setItem("newsCart", JSON.stringify(cart));
