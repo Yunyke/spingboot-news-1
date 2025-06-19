@@ -261,6 +261,8 @@
 </main>
 
 <script>
+const GEMINI_API_KEY = "AIzaSyAe55d1a9eVeG_X5PWnyJEVGcXJTDpBr6I"; // 金鑰
+
 function loadCart() {
   const ids = JSON.parse(localStorage.getItem("newsCart") || "[]")
               .filter(id => Number.isInteger(id) && id > 0);
@@ -278,20 +280,21 @@ function loadCart() {
   })
   .then(res => res.text())
   .then(html => {
-	  document.getElementById("cart-content").innerHTML = html;
+    document.getElementById("cart-content").innerHTML = html;
 
-	  // 💡 新增：自動移除 localStorage 裡撈不到的 ID
-	  const existingIds = Array.from(document.querySelectorAll(".remove-from-cart-btn"))
-	    .map(btn => parseInt(btn.dataset.id));
+    // ✅ 移除 localStorage 無效 ID
+    const existingIds = Array.from(document.querySelectorAll(".remove-from-cart-btn"))
+      .map(btn => parseInt(btn.dataset.id));
 
-	  let cartIds = JSON.parse(localStorage.getItem("newsCart") || "[]");
-	  const filtered = cartIds.filter(id => existingIds.includes(id));
+    let cartIds = JSON.parse(localStorage.getItem("newsCart") || "[]");
+    const filtered = cartIds.filter(id => existingIds.includes(id));
 
-	  if (filtered.length !== cartIds.length) {
-	    localStorage.setItem("newsCart", JSON.stringify(filtered));
-	    console.warn("🧹 已從 localStorage 清除無效新聞 ID：", cartIds.filter(id => !existingIds.includes(id)));
-	  }
-    
+    if (filtered.length !== cartIds.length) {
+      localStorage.setItem("newsCart", JSON.stringify(filtered));
+      console.warn("🧹 已從 localStorage 清除無效新聞 ID：", cartIds.filter(id => !existingIds.includes(id)));
+    }
+
+    // ✅ 產生左側目錄
     const sidebar = document.getElementById("sidebar-nav");
     sidebar.innerHTML = "<h5>📑 新聞清單</h5><ul class='sidebar-list'></ul>";
     const list = sidebar.querySelector(".sidebar-list");
@@ -317,7 +320,8 @@ function loadCart() {
       li.appendChild(link);
       list.appendChild(li);
     });
-    // 綁定移除
+
+    // ✅ 綁定移除按鈕
     document.querySelectorAll(".remove-from-cart-btn").forEach(btn => {
       btn.addEventListener("click", function () {
         const id = parseInt(this.dataset.id);
@@ -328,7 +332,7 @@ function loadCart() {
       });
     });
 
-    // 綁定展開全文
+    // ✅ 綁定展開全文
     document.querySelectorAll(".toggle-content-btn").forEach(btn => {
       btn.addEventListener("click", function () {
         const content = this.closest(".news-feed-card").querySelector(".news-feed-content");
@@ -338,35 +342,65 @@ function loadCart() {
       });
     });
   });
-  
 }
+
+// ✅ 開關 AI 聊天視窗
 function toggleChatbox() {
-	  const chatbox = document.getElementById("ai-chatbox");
-	  chatbox.style.display = (chatbox.style.display === "none" || chatbox.style.display === "") ? "flex" : "none";
-	}
+  const chatbox = document.getElementById("ai-chatbox");
+  chatbox.style.display = (chatbox.style.display === "none" || chatbox.style.display === "") ? "flex" : "none";
+}
 
-	function sendAiMessage() {
-		document.getElementById("ai-user-input").addEventListener("keydown", function (e) {
-			  if (e.key === "Enter") {
-			    sendAiMessage();
-			  }
-			});
+// ✅ 傳送訊息到 Gemini 並顯示回覆
+async function sendAiMessage() {
+  const input = document.getElementById("ai-user-input");
+  const msg = input.value.trim();
+  if (!msg) return;
 
-	  const messages = document.getElementById("ai-chatbox-messages");
+  const messages = document.getElementById("ai-chatbox-messages");
 
-	  const userMsg = document.createElement("div");
-	  userMsg.innerHTML = `<strong>你:</strong> ${msg}`;
-	  messages.appendChild(userMsg);
+  // 顯示使用者訊息
+  const userMsg = document.createElement("div");
+  userMsg.innerHTML = `<strong>你:</strong> ${msg}`;
+  messages.appendChild(userMsg);
+  input.value = "";
 
-	  const aiReply = document.createElement("div");
-	  aiReply.innerHTML = `<strong>AI:</strong> 🤖 我目前是靜態範例，有需要我可以連接 API！`;
-	  messages.appendChild(aiReply);
+  // 顯示 loading
+  const aiReply = document.createElement("div");
+  aiReply.innerHTML = `<strong>AI:</strong> ⏳ 回覆中...`;
+  messages.appendChild(aiReply);
+  messages.scrollTop = messages.scrollHeight;
 
-	  input.value = "";
-	  messages.scrollTop = messages.scrollHeight;
-	}
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: msg }] }]
+      })
+    });
 
+    const data = await res.json();
+    const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || "⚠️ 無法取得回應";
+
+    aiReply.innerHTML = `<strong>AI:</strong> ${replyText}`;
+  } catch (err) {
+    console.error("Gemini API 錯誤：", err);
+    aiReply.innerHTML = `<strong>AI:</strong> ❌ 發生錯誤，請稍後再試`;
+  }
+
+  messages.scrollTop = messages.scrollHeight;
+}
+
+// ✅ 綁定 Enter 鍵送出
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("ai-user-input").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+      sendAiMessage();
+    }
+  });
+});
 </script>
+
 
 <!-- Thymeleaf Fragment for cart -->
 <div th:fragment="cartFragment">

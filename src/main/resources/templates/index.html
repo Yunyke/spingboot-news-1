@@ -241,6 +241,18 @@ h2.news-section-title {
 body {
 	top: 0 !important;
 }
+
+.custom-auth-btn {
+  background-color: transparent !important; /* 背景透明 */
+  border: 1px solid white; /* 白色邊框 */
+  color: black !important;
+  transition: all 0.3s ease;
+}
+
+.custom-auth-btn:hover {
+  background-color: white !important;
+  color: black !important; /* 滑過變反色 */
+}
 </style>
 </head>
 <body>
@@ -292,6 +304,7 @@ body {
 				<a class="btn btn-warning position-fixed bottom-0 end-0 m-4"
    href="/cart" style="z-index: 999;" id="cart-button">
    📰 查看新聞清單 <span id="cart-count" class="badge bg-dark ms-1"></span>
+   
 </a>
 				<ul class="navbar-nav ms-auto">
 					<li class="nav-item" th:if="${session.name}"><a
@@ -300,17 +313,37 @@ body {
 					</a></li>
 					<li class="nav-item" th:if="${name}"><a class="nav-link"
 						th:href="@{/logout}">登出</a></li>
+						
+					<form class="d-flex ms-auto align-items-center" th:action="@{/search}" method="get">
+  <!-- 🔤 Label -->
+  
 
-					<!-- 如果沒登入，顯示登入註冊 -->
-					<li class="nav-item" th:if="${username == null}"><a
-						class="nav-link" th:href="@{/login}">登入</a></li>
-					<li class="nav-item" th:if="${username == null}"><a
-						class="nav-link" th:href="@{/register}">註冊</a></li>
+  <!-- 🔘 按鈕 + 輸入框 -->
+  <div class="input-group input-group-sm" style="max-width: 250px;">
+    <!-- 搜尋按鈕 -->
+    <button class="btn btn-outline-light" type="submit">搜尋</button>
+
+    <!-- 輸入框 -->
+    <input type="text" name="keyword" class="form-control white text-black  border-0"
+           placeholder="輸入關鍵字…" aria-label="Search">
+  </div>
+</form>
+					
 				</ul>
 			</div>
 		</div>
 	</nav>
+	<div style="position: absolute; top: 5px; right: 20px; z-index: 1050; background-color: #f8f9fa; padding: 5px 10px; border-radius: 8px; color: #6c757d;"><!-- ✅ 修改：加入 color: #6c757d 為淺灰色 -->
+  <!-- 使用者已登入 -->
+  <span class="text-warning me-2" th:if="${session.name}">
+    歡迎~<strong th:text="${name}" style="color: #6c757d;"><!-- ✅ 修改：加 style 讓 name 也變灰色 -->使用者</strong>
+  </span>
+  <a class="btn btn-sm btn-outline-light me-2" th:if="${name}" th:href="@{/logout}" style="color: #6c757d;"><!-- ✅ 修改：字體顏色變灰色 -->登出</a>
 
+  <!-- 尚未登入 -->
+  <a class="btn btn-sm btn-outline-light me-2 custom-auth-btn" th:href="@{/login}" style="color: #6c757d;"><!-- ✅ 修改 -->登入</a>
+  <a class="btn btn-sm btn-outline-light custom-auth-btn" th:href="@{/register}" style="color: #6c757d;"><!-- ✅ 修改 -->註冊</a>
+</div>
 	<!-- 🔵 新聞卡片區 -->
 	<div class="grid-container">
 		<!-- 三個區塊：CNN、BBC 和 NHK -->
@@ -351,7 +384,7 @@ body {
 
 					<!-- 加入清單用主鍵 id 就好 -->
 					<button class="btn btn-sm btn-outline-primary add-to-cart-btn"
-    th:attr="data-id=${news.id}">🔖加入清單</button>
+    th:attr="data-id=${news.id}">➕</button>
 
 					<!-- 統一用 url －－ Entity 裡的唯一欄位 -->
 					<a th:href="${news.url}" target="_blank">
@@ -383,7 +416,7 @@ body {
 
 					<!-- 🔧 用 news.url.hashCode() 而非不存在的 news.link -->
 					<button class="btn btn-sm btn-outline-primary add-to-cart-btn"
-    th:attr="data-id=${news.id}">🔖加入清單</button>
+    th:attr="data-id=${news.id}">➕</button>
 
 					<!-- 🔧 href 改為 news.url -->
 					<a th:href="${news.url}" target="_blank"
@@ -435,7 +468,7 @@ body {
 		      } else {
 		        cart = cart.filter(itemId => itemId !== id);
 		        card.classList.remove("added-to-cart");
-		        btn.innerText = "🔖加入清單";
+		        btn.innerText = "+";
 		      }
 
 		      localStorage.setItem("newsCart", JSON.stringify(cart));
@@ -454,6 +487,46 @@ body {
 		    badge.style.display = cart.length === 0 ? "none" : "inline-block";
 		  }
 		}
+		btn.addEventListener("click", function (event) {
+			  event.stopPropagation();
+
+			  if (!cart.includes(id)) {
+			    cart.push(id);
+			    card.classList.add("added-to-cart");
+			    btn.innerText = "✅ 已加入";
+
+			    // ✅ 新增這段程式碼：傳送到後端 API
+			    fetch("/api/cart", {
+			      method: "POST",
+			      headers: {
+			        "Content-Type": "application/json"
+			      },
+			      body: JSON.stringify(id) // ✅ 後端可接收 JSON 格式
+			    }).then(res => {
+			      if (!res.ok) throw new Error("加入失敗");
+			      return res.json(); // 假如你有回傳資料可用
+			    }).catch(err => {
+			      console.error("加入清單時發生錯誤：", err);
+			    });
+
+			  } else {
+			    cart = cart.filter(itemId => itemId !== id);
+			    card.classList.remove("added-to-cart");
+			    btn.innerText = "➕";
+
+			    // ✅ 可選：移除也同步到後端
+			    fetch("/api/cart/" + id, {
+			      method: "DELETE"
+			    }).then(res => {
+			      if (!res.ok) throw new Error("移除失敗");
+			    }).catch(err => {
+			      console.error("移除清單時發生錯誤：", err);
+			    });
+			  }
+
+			  localStorage.setItem("newsCart", JSON.stringify(cart));
+			  updateCartCount();
+			});
 
 </script>
 

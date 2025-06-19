@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @Service
 public class NewsService {
@@ -82,6 +83,10 @@ public class NewsService {
             }
         }
     }
+    
+    public News getNewsById(Long id) {
+        return newsRepository.findById(id).orElse(null);
+    }
 
     private ZonedDateTime parseZonedTime(String dateTimeStr) {
         try {
@@ -97,6 +102,31 @@ public class NewsService {
         }                                                     
         return newsRepository.findByIdIn(ids);               
     }         
+    
+    public List<News> searchByKeyword(String keyword) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return List.of();
+        }
+
+        List<News> rawResults = newsRepository
+            .findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(keyword, keyword);
+
+        // ✅ 為每個結果加上高亮（title only，可擴充）
+        String highlightKeyword = "(?i)(" + Pattern.quote(keyword) + ")";
+        Pattern pattern = Pattern.compile(highlightKeyword);
+
+        for (News news : rawResults) {
+            // 這裡假設你想高亮 title，內容可擴充
+            String title = news.getTitle();
+            if (title != null) {
+                String highlighted = pattern.matcher(title)
+                    .replaceAll("<mark>$1</mark>");  // ✅ <mark> 是 HTML 高亮標籤
+                news.setTitle(highlighted);
+            }
+        }
+
+        return rawResults;
+    }
     @Scheduled(cron = "0 */30 * * * *")
     public void autoFetchNews() {
         System.out.println("🕒 自動開始抓新聞...");

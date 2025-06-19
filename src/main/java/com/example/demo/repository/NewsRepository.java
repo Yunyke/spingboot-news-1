@@ -20,4 +20,7 @@ public interface NewsRepository extends JpaRepository<News, Long> {
     List<News> findBySourceOrderByPublishedAtDesc(String source);
     List<News> findByPublishedAtBetween(ZonedDateTime start, ZonedDateTime end);
     List<News> findByTitleContaining(String keyword);
+
+    List<News> findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(String title, String content);
+
 }
