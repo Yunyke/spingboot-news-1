@@ -27,28 +27,28 @@ public class LoginController {
     }
     
 
-//    @PostMapping
-//    public String checkLogin(
-//            @RequestParam String username,
-//            @RequestParam String password,
-//            HttpSession session,
-//            HttpServletRequest req,
-//            Model model) {
-//
-//        try {
-//            // ✅ 從 certService 取得使用者憑證（包含 name 和 username）
-//            UserCert userCert = certService.getCert(username, password);
-//
-//            // ✅ 將資訊放入 session
-//            session.setAttribute("userCert", userCert);
-//            session.setAttribute("name", userCert.getName()); // 頁面用 ${name}
-//            session.setAttribute("locale", req.getLocale());
-//
-//            return "redirect:/news";
-//
-//        } catch (Exception e) {
-//            model.addAttribute("message", e.getMessage());
-//            return "error";
-//        }
-//    }
+      @PostMapping
+      public String checkLogin(
+              @RequestParam String username,
+              @RequestParam String password,
+              HttpSession session,
+              HttpServletRequest req,
+              Model model) {
+  
+          try {
+              // ✅ 從 certService 取得使用者憑證（包含 name 和 username）
+              UserCert userCert = certService.getCert(username, password);
+  
+              // ✅ 將資訊放入 session
+              session.setAttribute("userCert", userCert);
+              session.setAttribute("name", userCert.getName());
+              session.setAttribute("locale", req.getLocale());
+  
+              return "redirect:/news";
+  
+          } catch (Exception e) {
+              model.addAttribute("message", e.getMessage());
+              return "error";
+          }
+      }
 }

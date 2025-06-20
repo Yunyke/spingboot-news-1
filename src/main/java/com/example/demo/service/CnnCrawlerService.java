@@ -6,9 +6,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.jsoup.nodes.Element;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
@@ -21,34 +21,34 @@ import java.util.List;
 @Service
 public class CnnCrawlerService {
 
-    @Autowired
-    private NewsRepository newsRepository;
+    private final NewsRepository newsRepository; // ⭐️ 建構式注入
+
+    public CnnCrawlerService(NewsRepository newsRepository) {
+        this.newsRepository = newsRepository;
+    }
 
     private static final String API_URL = "https://newsapi.org/v2/everything";
     private static final String API_KEY = "ce761eb8cf3c4502afd4330735237d5f";
 
     public List<News> fetchAndSaveIfNotExist() {
-
         List<News> saved = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(new URL(API_URL + "?sources=cnn&language=en&pageSize=50&page=1&apiKey=" + API_KEY).openStream()))) {
+                new InputStreamReader(new URL(
+                    API_URL + "?sources=cnn&language=en&pageSize=50&page=1&apiKey=" + API_KEY
+                ).openStream()))) {
 
             String jsonStr = br.lines().reduce("", String::concat);
             JSONArray articles = new JSONObject(jsonStr).getJSONArray("articles");
 
             for (int i = 0; i < articles.length(); i++) {
-
                 JSONObject art = articles.getJSONObject(i);
                 String url = art.optString("url");
                 if (newsRepository.existsByUrl(url)) continue;
 
-                /* --- 2-1 先爬 CNN 網頁全文 ---------------- */
                 String fullText = "";
                 try {
                     Document doc = Jsoup.connect(url).userAgent("Mozilla/5.0").get();
-
-                    // 🔧 修改：支援更多 selector，抓不到就 fallback
                     Elements paras = doc.select("article div[data-component='text-block'], div.l-container p, article p");
 
                     StringBuilder sbTxt = new StringBuilder();
@@ -57,7 +57,6 @@ public class CnnCrawlerService {
                     }
                     fullText = sbTxt.toString().trim();
 
-                    // 🔧 額外提示哪些網頁沒抓到
                     if (fullText.isEmpty()) {
                         System.err.println("⚠️ 無法抓取全文: " + url);
                     }
@@ -67,7 +66,6 @@ public class CnnCrawlerService {
                     ex.printStackTrace();
                 }
 
-                /* --- 2-2 存進資料庫 ----------------------- */
                 News news = new News();
                 news.setTitle(art.optString("title"));
                 news.setDescription(art.optString("description"));
@@ -76,10 +74,9 @@ public class CnnCrawlerService {
                 news.setAuthor(art.optString("author"));
                 news.setSource("CNN");
 
-                // 🔧 修改：避開 NewsAPI 的簡略 content（含 "[+xxx chars]"）
                 String apiContent = art.optString("content");
                 if (apiContent.contains("[+") || apiContent.length() < 100) {
-                    apiContent = ""; // 判斷為 preview
+                    apiContent = "";
                 }
 
                 news.setContent(fullText.isEmpty() ? apiContent : fullText);
@@ -98,5 +95,12 @@ public class CnnCrawlerService {
         }
 
         return saved;
+    }
+
+    // ⭐️ 新增：排程定時抓取 CNN，每 15 分鐘
+    @Scheduled(fixedRate = 15 * 60 * 1000)
+    public void scheduledFetch() {
+        System.out.println("抓取 CNN 排程啟動！");
+        fetchAndSaveIfNotExist();
     }
 }

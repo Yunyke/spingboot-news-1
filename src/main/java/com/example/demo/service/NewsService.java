@@ -127,6 +127,9 @@ public class NewsService {
 
         return rawResults;
     }
+    public List<News> findByIds(List<Long> ids) {
+        return newsRepository.findByIdIn(ids);
+    }
     @Scheduled(cron = "0 */30 * * * *")
     public void autoFetchNews() {
         System.out.println("🕒 自動開始抓新聞...");

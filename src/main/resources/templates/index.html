@@ -237,6 +237,15 @@ h2.news-section-title {
 	color: pink;
 	transform: scale(1.2);
 }
+.cnn-card .news-title {
+  font-size: 0.95rem;
+  line-height: 1.2;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  padding-right: 60px; /* 為右上角的 ➕ 預留空間 */
+}
 
 body {
 	top: 0 !important;
@@ -307,12 +316,7 @@ body {
    
 </a>
 				<ul class="navbar-nav ms-auto">
-					<li class="nav-item" th:if="${session.name}"><a
-						class="nav-link disabled text-warning" href="#"> 歡迎~<strong
-							th:text="${name}">使用者</strong>
-					</a></li>
-					<li class="nav-item" th:if="${name}"><a class="nav-link"
-						th:href="@{/logout}">登出</a></li>
+					
 						
 					<form class="d-flex ms-auto align-items-center" th:action="@{/search}" method="get">
   <!-- 🔤 Label -->
@@ -333,16 +337,20 @@ body {
 			</div>
 		</div>
 	</nav>
-	<div style="position: absolute; top: 5px; right: 20px; z-index: 1050; background-color: #f8f9fa; padding: 5px 10px; border-radius: 8px; color: #6c757d;"><!-- ✅ 修改：加入 color: #6c757d 為淺灰色 -->
-  <!-- 使用者已登入 -->
-  <span class="text-warning me-2" th:if="${session.name}">
-    歡迎~<strong th:text="${name}" style="color: #6c757d;"><!-- ✅ 修改：加 style 讓 name 也變灰色 -->使用者</strong>
-  </span>
-  <a class="btn btn-sm btn-outline-light me-2" th:if="${name}" th:href="@{/logout}" style="color: #6c757d;"><!-- ✅ 修改：字體顏色變灰色 -->登出</a>
+	<!-- ✅ 尚未登入時顯示登入/註冊 -->
+<div th:if="${session.name == null}"
+     style="position: absolute; top: 5px; right: 20px; z-index: 1050; background-color: #f8f9fa; padding: 5px 10px; border-radius: 8px; color: #6c757d;">
+  <a class="btn btn-sm btn-outline-light me-2 custom-auth-btn" th:href="@{/login}" style="color: #6c757d;">登入</a>
+  <a class="btn btn-sm btn-outline-light custom-auth-btn" th:href="@{/register}" style="color: #6c757d;">註冊</a>
+</div>
 
-  <!-- 尚未登入 -->
-  <a class="btn btn-sm btn-outline-light me-2 custom-auth-btn" th:href="@{/login}" style="color: #6c757d;"><!-- ✅ 修改 -->登入</a>
-  <a class="btn btn-sm btn-outline-light custom-auth-btn" th:href="@{/register}" style="color: #6c757d;"><!-- ✅ 修改 -->註冊</a>
+<!-- ✅ 已登入時顯示歡迎詞和登出 -->
+<div th:if="${session.name != null}"
+     style="position: absolute; top: 5px; right: 20px; z-index: 1050; background-color: #f8f9fa; padding: 5px 10px; border-radius: 8px; color: #6c757d;">
+  <span class="text-warning me-2">
+    歡迎～<strong th:text="${session.name}" style="color: #6c757d;">使用者</strong>
+  </span>
+  <a class="btn btn-sm btn-outline-light me-2" th:href="@{/logout}" style="color: #6c757d;">登出</a>
 </div>
 	<!-- 🔵 新聞卡片區 -->
 	<div class="grid-container">
@@ -355,7 +363,7 @@ body {
 
 				<div th:each="news : ${cnnNewsList}"
 					th:if="${news != null and news.title != null and news.title != ''}"
-					class="news-card">
+					class="news-card  ">
 
 					<button class="btn btn-sm btn-outline-primary add-to-cart-btn"
     th:attr="data-id=${news.id}">➕</button>
@@ -364,7 +372,7 @@ body {
 							<img th:if="${news.imageUrl != null}" th:src="${news.imageUrl}"
 								class="news-img" />
 							<div class="news-content">
-								<h5 th:text="${news.title}"></h5>
+								<h5 class="news-title" th:text="${news.title}"></h5>
 								<p class="hover-description" th:text="${news.description}"></p>
 								<p class="news-time"
 									th:text="${#temporals.format(news.publishedAt, 'yyyy-MM-dd HH:mm')}"></p>

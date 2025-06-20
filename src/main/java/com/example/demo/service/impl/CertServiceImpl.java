@@ -1,9 +1,12 @@
 package com.example.demo.service.impl;
 
+import java.security.cert.CertSelector;
+import java.time.LocalDate;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.example.demo.exception.CertException;
+import com.example.demo.exception.*;
 import com.example.demo.model.dto.UserCert;
 import com.example.demo.model.entity.User;
 import com.example.demo.repository.UserRepository;
@@ -17,18 +20,19 @@ public class CertServiceImpl implements CertService {
 
 	@Override
 	public com.example.demo.model.dto.UserCert getCert(String username, String password) throws CertException {
-		
-		 User user = userRepository.findByUsername(username)        
-                 .orElseThrow(() -> new CertException("查無此人"));
+		User user = userRepository.findByUsername(username);
+		if (user == null) {
+			throw new CertException("查無此人");
+		}
 
 		if (!user.getPassword().equals(password)) {
 			throw new CertException("密碼錯誤");
 
 		}
 
-		UserCert userCert = new UserCert(user.getId(), user.getName(), user.getUsername(), null, 
+		UserCert userCert = new UserCert(user.getId(), user.getName(), user.getUsername(), null, // 不回傳密碼
 				user.getBirthdate(), user.getGender(), user.getEmail(), user.getActive());
 		return userCert;
-	} 
+	}
 
 }
