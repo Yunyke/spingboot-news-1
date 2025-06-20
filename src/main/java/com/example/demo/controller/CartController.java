@@ -1,22 +1,30 @@
 package com.example.demo.controller;
 
 import com.example.demo.model.entity.News;
+import com.example.demo.service.FavoriteService;
 import com.example.demo.service.NewsService;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/cart")
+@RequiredArgsConstructor    
 public class CartController {
 
-    @Autowired
-    private NewsService newsService;
+    
+    private final NewsService newsService;
 
-   
+    private final FavoriteService favoriteService; 
+    
     @GetMapping
     public String cartPage() {
         return "cart";  
@@ -45,9 +53,14 @@ public class CartController {
         if (!notFoundIds.isEmpty()) {
             System.out.println("⚠️ 以下 ID 找不到對應新聞：" + notFoundIds);
         }
+        Integer userId = 3;
+        Set<Long> favoriteIds = favoriteService.getFavoriteNewsIds(userId);
         
         model.addAttribute("cartNews", newsList);
-        model.addAttribute("foundIds", foundIds); 
+        model.addAttribute("favoriteNewsIds", favoriteIds); // ⭐ 必填
+        model.addAttribute("foundIds", foundIds);
+
+        
         return "cart :: cartFragment";
     }
 }

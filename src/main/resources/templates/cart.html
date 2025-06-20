@@ -281,6 +281,32 @@ function loadCart() {
   .then(res => res.text())
   .then(html => {
     document.getElementById("cart-content").innerHTML = html;
+ // ✅ 綁定收藏按鈕
+    document.querySelectorAll(".favorite-btn").forEach(btn => {
+      btn.addEventListener("click", function () {
+        const newsId = this.dataset.id;
+        const userId = 3; // TODO: 改成實際登入使用者 ID 來源
+        const self = this;
+
+        fetch(`/api/favorites/${userId}/${newsId}`, {
+          method: "POST"
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.favorited !== undefined) {
+            const icon = data.favorited ? "❤️ 已收藏" : "💙 收藏";
+            self.innerHTML = icon;
+            self.classList.toggle("btn-outline-success", !data.favorited);
+            self.classList.toggle("btn-outline-danger", data.favorited);
+          }
+        })
+        .catch(err => {
+          console.error("收藏失敗", err);
+          alert("⚠️ 收藏失敗，請稍後再試");
+        });
+      });
+    });
+
 
     // ✅ 移除 localStorage 無效 ID
     const existingIds = Array.from(document.querySelectorAll(".remove-from-cart-btn"))
@@ -419,6 +445,10 @@ document.addEventListener("DOMContentLoaded", () => {
     <div class="news-feed-actions">
       <button class="btn btn-sm btn-outline-primary toggle-content-btn">閱讀全文</button>
       <button class="btn btn-sm btn-outline-danger remove-from-cart-btn" th:attr="data-id=${news.id}">移除</button>
+      <button th:class="'btn btn-sm favorite-btn ' + (${favoriteNewsIds.contains(news.id)} ? 'btn-outline-danger' : 'btn-outline-success')"
+              th:text="${favoriteNewsIds.contains(news.id)} ? '❤️ 已收藏' : '💙 收藏'"
+              th:attr="data-id=${news.id}">
+      </button>
     </div>
   </div>
 </div>
