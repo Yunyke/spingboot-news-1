@@ -35,7 +35,9 @@ public class NewsScraperController {
 			this.newsService   = newsService;
 			this.newsRepository = newsRepository;
 }
-
+	private <T> List<T> limit(List<T> list, int max) {
+	    return list == null ? List.of() : list.subList(0, Math.min(max, list.size()));
+	}
 	// 處理「打開首頁 / 或 /news」時的請求，主要負責：
 	// 1.加載各新聞來源的資料
 	// 2.裝進 model 裡供前端（Thymeleaf）使用
@@ -49,10 +51,10 @@ public class NewsScraperController {
         newsService.fetchAndSaveAllNews();   // CNN / BBC / NHK
         
         /* 2) 依 source 從同一張表撈出來 --------------------------- */
-        model.addAttribute("cnnNewsList", newsRepository.findBySourceOrderByPublishedAtDesc("CNN"));
-        model.addAttribute("bbcNewsList", newsRepository.findBySourceOrderByPublishedAtDesc("BBC"));
-        model.addAttribute("nhkNewsList", newsRepository.findBySourceOrderByPublishedAtDesc("NHK"));
-    	
-		return "index"; // 回傳 Thymeleaf 或其他 template 名稱
+        model.addAttribute("cnnNewsList", limit(newsRepository.findBySourceOrderByPublishedAtDesc("CNN"), 30));
+        model.addAttribute("bbcNewsList", limit(newsRepository.findBySourceOrderByPublishedAtDesc("BBC"), 30));
+        model.addAttribute("nhkNewsList", limit(newsRepository.findBySourceOrderByPublishedAtDesc("NHK"), 30));
+
+        return "index";
 	}
 }

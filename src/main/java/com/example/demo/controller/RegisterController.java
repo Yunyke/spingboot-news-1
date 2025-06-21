@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.model.dto.UserCert;
 import com.example.demo.model.dto.UserDto;
+import com.example.demo.service.EmailService;
 import com.example.demo.service.RegisterService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,6 +19,9 @@ public class RegisterController {
 
     @Autowired
     private RegisterService registerService;
+    
+    @Autowired  // ✅ 注入剛剛變成 @Service 的 EmailService
+    private EmailService emailService;
 
     // 顯示註冊表單頁面
     @GetMapping
@@ -28,31 +32,36 @@ public class RegisterController {
 
     @PostMapping
     public String registerUser(
-    		@ModelAttribute("userDto") UserDto userDto,
-            Model model,
-            HttpServletRequest request
+        @ModelAttribute("userDto") UserDto userDto,
+        Model model,
+        HttpServletRequest request
     ) {
-    	 try {
-             // ✅ 呼叫註冊服務
-             registerService.registerUser(userDto);
+        try {
+            // ✅ 呼叫註冊服務
+            registerService.registerUser(userDto);
 
-             // ✅ 建立登入憑證並儲存使用者資訊
-             UserCert userCert = new UserCert();
-             userCert.setUsername(userDto.getUsername());
-             userCert.setName(userDto.getName()); // ✅ 新增：將 name 放入 UserCert 供顯示歡迎用
+            // ✅ 傳送 Email 確認信
+            String email = userDto.getEmail();  // 假設你的 UserDto 有 getEmail()
+            String confirmUrl = "http://localhost:8008/user/confirm?email=" + email;
+            emailService.sendEmail(email, confirmUrl);
 
-             // ✅ 將使用者資訊存入 Session
-             HttpSession session = request.getSession();
-             session.setAttribute("userCert", userCert);
-             session.setAttribute("name", userDto.getName()); // ✅ 新增：單獨設置 name 屬性給畫面用
-             session.setAttribute("locale", request.getLocale());
+            // ✅ 建立登入憑證
+            UserCert userCert = new UserCert();
+            userCert.setUsername(userDto.getUsername());
+            userCert.setName(userDto.getName()); // ✅ 給歡迎畫面用
 
-             // ✅ 導向首頁
-             return "redirect:/news";
-         } catch (Exception e) {
-             model.addAttribute("error", e.getMessage());
-             return "register";
-         }
+            // ✅ 儲存 Session
+            HttpSession session = request.getSession();
+            session.setAttribute("userCert", userCert);
+            session.setAttribute("name", userDto.getName());
+            session.setAttribute("locale", request.getLocale());
+
+            // ✅ 導向首頁
+            return "redirect:/news";
+
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            return "register"; // ⚠️ 注意：return 一定要放最後，不能放在 try 裡其他邏輯之前
         }
-    
+    }
 }

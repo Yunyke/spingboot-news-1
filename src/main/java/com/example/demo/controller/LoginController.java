@@ -22,15 +22,18 @@ public class LoginController {
     private CertService certService;
 
     @GetMapping
-    public String loginPage() {
-        return "login";
-    }
+    public String loginPage(@RequestParam(defaultValue = "/news") String redirect,
+            Model model) {
+model.addAttribute("redirect", redirect);
+return "login";
+}
     
 
       @PostMapping
       public String checkLogin(
               @RequestParam String username,
               @RequestParam String password,
+              @RequestParam(defaultValue = "/news") String redirect, 
               HttpSession session,
               HttpServletRequest req,
               Model model) {
@@ -44,7 +47,7 @@ public class LoginController {
               session.setAttribute("name", userCert.getName());
               session.setAttribute("locale", req.getLocale());
   
-              return "redirect:/news";
+              return "redirect:" + redirect;
   
           } catch (Exception e) {
               model.addAttribute("message", e.getMessage());

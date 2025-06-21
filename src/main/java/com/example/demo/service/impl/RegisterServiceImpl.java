@@ -11,6 +11,9 @@ import com.example.demo.repository.UserRepository;
 import com.example.demo.mapper.UserMapper;
 import com.example.demo.service.RegisterService;
 
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.jpa.repository.Modifying;
+
 @Service
 public class RegisterServiceImpl implements RegisterService {
 
@@ -41,16 +44,24 @@ public class RegisterServiceImpl implements RegisterService {
         // 儲存
         User savedUser = userRepository.save(newUser);
 
-        // 回傳 DTO
         return userMapper.toDto(savedUser);
     }
 
-	@Override
-	public UserDto findByUsername(String username) {
-	    User user = userRepository.findByUsername(username);
-	    if (user == null) {
-	        throw new RuntimeException("User not found");
-	    }
-	    return userMapper.toDto(user);
-	}
+    @Override
+    @Transactional
+    public void confirmUser(String email) {
+        int updated = userRepository.activateUser(email.trim());
+        if (updated == 0) {
+            throw new RuntimeException("帳號不存在或已啟用：" + email);
+        }
+    }
+
+    @Override
+    public UserDto findByUsername(String username) {
+        User user = userRepository.findByUsername(username);
+        if (user == null) {
+            throw new RuntimeException("User not found");
+        }
+        return userMapper.toDto(user);
+    }
 }

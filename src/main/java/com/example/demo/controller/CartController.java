@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
+import com.example.demo.model.entity.Cart;
 import com.example.demo.model.entity.News;
+import com.example.demo.service.CartService;
 import com.example.demo.service.FavoriteService;
 import com.example.demo.service.NewsService;
 
@@ -22,7 +24,7 @@ public class CartController {
 
     
     private final NewsService newsService;
-
+    private final CartService cartService;
     private final FavoriteService favoriteService; 
     
     @GetMapping
@@ -30,10 +32,19 @@ public class CartController {
         return "cart";  
     }
 
+    @PostMapping
+    public Cart createCart() {
+        return cartService.createCart();
+    }
+
+    @PostMapping("/{cartId}/news/{newsId}")
+    public Cart addNewsToCart(@PathVariable Long cartId, @PathVariable Long newsId) {
+        return cartService.addItem(cartId, newsId);
+    }
     
-   
     @PostMapping("/load")
     public String loadCart(@RequestBody List<Long> newsIds, Model model) {
+    	
         System.out.println("🟡 收到的 ID 清單：" + newsIds);
 
         // 撈出符合 ID 的新聞
@@ -62,5 +73,6 @@ public class CartController {
 
         
         return "cart :: cartFragment";
+        
     }
 }

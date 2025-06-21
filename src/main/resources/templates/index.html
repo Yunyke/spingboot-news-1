@@ -263,8 +263,17 @@ body {
   color: black !important; /* 滑過變反色 */
 }
 </style>
+
 </head>
 <body>
+<script th:inline="javascript">
+  /* 初始化登入狀態變數 */
+  window.USER_SESSION = {
+    isLoggedIn: /*[[${session.name != null}]]*/ false,
+    name: /*[['${session.name}']*/ ''
+  };
+  window.IS_LOGGED_IN = /*[[${session.name != null}]]*/ false;
+</script>
 	<div id="google_translate_element" style="display: none;"></div>
 	<!-- Google Translate -->
 	<script type="text/javascript">
@@ -286,7 +295,9 @@ body {
         }
       }, 1000); // 等待元件載入1秒再切換
     }
+    
   </script>
+  
 	<script
 		src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
@@ -304,16 +315,17 @@ body {
 			</button>
 			<div class="collapse navbar-collapse" id="navbarNav">
 				<ul class="navbar-nav">
-					<li class="nav-item"><a class="nav-link active" href="#">本日新聞</a></li>
+					<li class="nav-item"><a class="nav-link active" href="#">Top30</a></li>
 
 					<li class="nav-item"><a class="nav-link" href="#">CNN</a></li>
 					<li class="nav-item"><a class="nav-link" href="#">BBC</a></li>
 					<li class="nav-item"><a class="nav-link" href="#">NHK</a></li>
 				</ul>
-				<a class="btn btn-warning position-fixed bottom-0 end-0 m-4"
-   href="/cart" style="z-index: 999;" id="cart-button">
+				<a href="#"
+   class="btn btn-warning position-fixed bottom-0 end-0 m-4"
+   style="z-index: 999;"
+   onclick="handleViewCartClick()">
    📰 查看新聞清單 <span id="cart-count" class="badge bg-dark ms-1"></span>
-   
 </a>
 				<ul class="navbar-nav ms-auto">
 					
@@ -360,7 +372,7 @@ body {
 
 			<div class="news-section">
 				<h2 class="news-section-title mb-3" translate="no">CNN</h2>
-
+				
 				<div th:each="news : ${cnnNewsList}"
 					th:if="${news != null and news.title != null and news.title != ''}"
 					class="news-card  ">
@@ -452,90 +464,83 @@ body {
 
 	</div>
 	<script>
-	document.addEventListener("DOMContentLoaded", function () {
-		  let cart = JSON.parse(localStorage.getItem("newsCart") || "[]");
+  // ✅ 判斷是否已登入（由 Thymeleaf 傳給 JS）
 
-		  document.querySelectorAll(".add-to-cart-btn").forEach(btn => {
-		    const id = parseInt(btn.dataset.id);
-		    const card = btn.closest(".news-card");
+  document.addEventListener("DOMContentLoaded", function () {
+    let cart = JSON.parse(localStorage.getItem("newsCart") || "[]");
 
-		    // 初始狀態設置
-		    if (cart.includes(id)) {
-		      card.classList.add("added-to-cart");
-		      btn.innerText = "✅ 已加入";
-		    }
+    document.querySelectorAll(".add-to-cart-btn").forEach(btn => {
+      const id = parseInt(btn.dataset.id);
+      const card = btn.closest(".news-card");
 
-		    // 點擊按鈕切換加入/移除狀態
-		    btn.addEventListener("click", function (event) {
-		      event.stopPropagation();
+      // ✅ 預設狀態：如果已加過就顯示已加入
+      if (cart.includes(id)) {
+        card.classList.add("added-to-cart");
+        btn.innerText = "✅ 已加入";
+      }
 
-		      if (!cart.includes(id)) {
-		        cart.push(id);
-		        card.classList.add("added-to-cart");
-		        btn.innerText = "✅ 已加入";
-		      } else {
-		        cart = cart.filter(itemId => itemId !== id);
-		        card.classList.remove("added-to-cart");
-		        btn.innerText = "+";
-		      }
+      // ✅ 點擊事件
+      btn.addEventListener("click", function (event) {
+        event.stopPropagation();
 
-		      localStorage.setItem("newsCart", JSON.stringify(cart));
-		      updateCartCount();
-		    });
-		  });
+        // 🛑 如果沒登入，跳提示，直接 return
+        if (!window.IS_LOGGED_IN) {
+          alert("請先登入才能加入新聞清單！");
+          return;
+        }
 
-		  updateCartCount();
-		});
+        // ✅ 加入收藏
+        if (!cart.includes(id)) {
+          cart.push(id);
+          card.classList.add("added-to-cart");
+          btn.innerText = "✅ 已加入";
 
-		function updateCartCount() {
-		  const cart = JSON.parse(localStorage.getItem("newsCart") || "[]");
-		  const badge = document.getElementById("cart-count");
-		  if (badge) {
-		    badge.innerText = cart.length;
-		    badge.style.display = cart.length === 0 ? "none" : "inline-block";
-		  }
-		}
-		btn.addEventListener("click", function (event) {
-			  event.stopPropagation();
+          // ✅ 傳送到後端
+          fetch("/api/cart", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(id)
+          }).catch(err => {
+            console.error("加入清單時發生錯誤：", err);
+          });
 
-			  if (!cart.includes(id)) {
-			    cart.push(id);
-			    card.classList.add("added-to-cart");
-			    btn.innerText = "✅ 已加入";
+        } else {
+          // ✅ 移除收藏
+          cart = cart.filter(itemId => itemId !== id);
+          card.classList.remove("added-to-cart");
+          btn.innerText = "➕";
 
-			    // ✅ 新增這段程式碼：傳送到後端 API
-			    fetch("/api/cart", {
-			      method: "POST",
-			      headers: {
-			        "Content-Type": "application/json"
-			      },
-			      body: JSON.stringify(id) // ✅ 後端可接收 JSON 格式
-			    }).then(res => {
-			      if (!res.ok) throw new Error("加入失敗");
-			      return res.json(); // 假如你有回傳資料可用
-			    }).catch(err => {
-			      console.error("加入清單時發生錯誤：", err);
-			    });
+          // ✅ 通知後端移除
+          fetch("/api/cart/" + id, { method: "DELETE" })
+            .catch(err => {
+              console.error("移除清單時發生錯誤：", err);
+            });
+        }
 
-			  } else {
-			    cart = cart.filter(itemId => itemId !== id);
-			    card.classList.remove("added-to-cart");
-			    btn.innerText = "➕";
+        localStorage.setItem("newsCart", JSON.stringify(cart));
+        updateCartCount();
+      });
+    });
 
-			    // ✅ 可選：移除也同步到後端
-			    fetch("/api/cart/" + id, {
-			      method: "DELETE"
-			    }).then(res => {
-			      if (!res.ok) throw new Error("移除失敗");
-			    }).catch(err => {
-			      console.error("移除清單時發生錯誤：", err);
-			    });
-			  }
+    updateCartCount(); // 初始時更新右下角數字
+  });
 
-			  localStorage.setItem("newsCart", JSON.stringify(cart));
-			  updateCartCount();
-			});
-
+  function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem("newsCart") || "[]");
+    const badge = document.getElementById("cart-count");
+    if (badge) {
+      badge.innerText = cart.length;
+      badge.style.display = cart.length === 0 ? "none" : "inline-block";
+    }
+  }
+  function handleViewCartClick() {
+	  if (!window.IS_LOGGED_IN) {
+	    alert("請先登入才能查看新聞清單！");
+	    return;
+	  }
+	  // ✅ 有登入就導向 cart 頁
+	  window.location.href = "/cart";
+	}
 </script>
 
 </body>

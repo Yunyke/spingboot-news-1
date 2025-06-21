@@ -12,12 +12,12 @@ import com.example.demo.service.NewsService;
 @RequestMapping("/api/news")
 public class NewsController {
 
-	 @Autowired
-	    private NewsService newsService;
-
-	    @PostMapping("/fetch")
-	    public String fetchNews() {
-	        newsService.fetchAndSaveAllNews();
-	        return "新聞已抓取並儲存！";
-	    }
+//	 @Autowired
+//	    private NewsService newsService;
+//
+//	    @PostMapping("/fetch")
+//	    public String fetchNews() {
+//	        newsService.fetchAndSaveAllNews();
+//	        return "新聞已抓取並儲存！";
+//	    }
 	}

@@ -38,6 +38,18 @@
   <version>2.8.1</version>
 </dependency>
 
+<!-- <dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency> 
+ -->
+ 
+ <dependency>
+		<groupId>com.sun.mail</groupId>
+		<artifactId>javax.mail</artifactId>
+		<version>1.6.2</version>
+	</dependency>
+ 
 <!-- 讀取 .env 檔 -->
 <dependency>
   <groupId>io.github.cdimascio</groupId>
